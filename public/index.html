@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mostrador · ERP</title><link rel="stylesheet" href="/style.css"><script type="module" src="/app.js"></script></head>
+<body>
+<div class="shell">
+<aside class="rail">
+  <a class="brand" href="#caja"><span class="brandmark" aria-hidden="true">M</span><span>Mostrador<small>Gestión de tienda</small></span></a>
+  <nav aria-label="Módulos">
+    <a href="#caja">Punto de venta</a><a href="#inventario">Inventario</a><a href="#clientes">Clientes y abonos</a><a href="#ventas">Historial de ventas</a>
+  </nav>
+  <footer>Programación para Internet</footer>
+</aside>
+<main>
+  <div class="top"><span>Administración de tienda</span><time id="date"></time></div>
+  <div id="view" aria-busy="true"><p>Cargando operación…</p></div>
+</main>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+<dialog id="modal"><form id="form"></form></dialog>
+<dialog id="ticket-dialog" aria-labelledby="ticket-title">
+  <article id="ticket"></article>
+  <div class="actions ticket-actions">
+    <button type="button" id="ticket-close">Cerrar</button>
+    <button class="primary" type="button" id="ticket-print">Imprimir ticket</button>
+  </div>
+</dialog>
+</body>
+</html>
