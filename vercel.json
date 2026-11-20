@@ -1,0 +1,27 @@
+{
+  "framework": null,
+  "rewrites": [
+    {
+      "source": "/api/state",
+      "destination": "/api/index?route=state"
+    },
+    {
+      "source": "/api/products",
+      "destination": "/api/index?route=products"
+    },
+    {
+      "source": "/api/clients",
+      "destination": "/api/index?route=clients"
+    },
+    {
+      "source": "/api/sales",
+      "destination": "/api/index?route=sales"
+    },
+    {
+      "source": "/api/payments",
+      "destination": "/api/index?route=payments"
+    }
+  ],
+  "outputDirectory": "public",
+  "buildCommand": null
+}

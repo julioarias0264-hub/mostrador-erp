@@ -11,12 +11,24 @@ const labels={
   ventas:['Historial de ventas','Consulta folios, productos vendidos e importes.']
 };
 document.querySelector('#date').textContent=new Intl.DateTimeFormat('es-MX',{dateStyle:'long'}).format(new Date());
+let authorization;
 let data, route, query='', client='', mode='cash', deposit='', noticeTimer, busy=false;
 const cart=new Map();
 async function api(path,body){
-  const response=await fetch('/api/'+path,body===undefined?undefined:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const headers=authorization?{Authorization:authorization}:{};
+  const options={headers};
+  if(body!==undefined){
+    headers['Content-Type']='application/json';
+    options.method='POST';
+    options.body=JSON.stringify(body);
+  }
+  const response=await fetch('/api/'+path,options);
   const payload=await response.json();
-  if(!response.ok)throw new Error(payload.error);
+  if(!response.ok){
+    const error=new Error(payload.error);
+    error.status=response.status;
+    throw error;
+  }
   return payload;
 }
 function notify(text){
@@ -186,5 +198,30 @@ view.addEventListener('click',async event=>{
   }catch(error){busy=false;if(route==='caja')refreshBasket();notify(error.message);}
 });
 window.addEventListener('hashchange',()=>{if(data)render();});
-try{data=await api('state');render();}
-catch{view.setAttribute('aria-busy','false');view.innerHTML='<p role="alert">No se pudo conectar con Mostrador. Recarga la página para reintentar.</p>';}
+async function start(){
+  try{data=await api('state');render();}
+  catch(error){
+    view.setAttribute('aria-busy','false');
+    if(error.status!==401){
+      view.innerHTML='<p role="alert">No se pudo conectar con Mostrador. Recarga la página para reintentar.</p>';
+      return;
+    }
+    view.innerHTML='<section class="panel panel-body"><form id="access"><h1>Acceso a Mostrador</h1><label>Contraseña<input name="password" type="password" autocomplete="current-password" required></label><p role="alert" class="error"></p><button class="primary" type="submit">Entrar</button></form></section>';
+    const access=document.querySelector('#access');
+    access.onsubmit=async event=>{
+      event.preventDefault();
+      const password=new FormData(access).get('password');
+      const bytes=new TextEncoder().encode('mostrador:'+password);
+      authorization='Basic '+btoa(Array.from(bytes,b=>String.fromCharCode(b)).join(''));
+      const submit=access.querySelector('button');
+      submit.disabled=true;
+      try{data=await api('state');render();}
+      catch(error){
+        authorization=undefined;
+        access.querySelector('.error').textContent=error.status===401?'Contraseña incorrecta.':'No se pudo conectar con Mostrador.';
+        submit.disabled=false;
+      }
+    };
+  }
+}
+await start();

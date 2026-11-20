@@ -27,3 +27,12 @@ Proyecto de demostración local para una sola tienda. No incluye cuentas de usua
 ## Tickets de venta
 
 Al terminar una venta aparece un comprobante con folio, fecha, cliente, productos, total y forma de pago desglosada entre cobro inicial y crédito. Desde **Historial de ventas → Ver ticket** puedes abrir un comprobante anterior. **Imprimir ticket** abre el diálogo del navegador para imprimir o guardar como PDF.
+
+## Publicación en Vercel y Supabase
+
+1. Crea un proyecto de Supabase. En **Connect**, copia la cadena PostgreSQL de **Transaction pooler** (puerto 6543).
+2. En Vercel importa este repositorio como proyecto **Other**. La configuración ya está en `vercel.json`.
+3. Configura `DATABASE_URL` con la cadena del pooler y `APP_PASSWORD` con una contraseña propia para el ERP. Ambas son variables privadas del servidor. Si la contraseña de Postgres incluye caracteres reservados de URL, codifícalos en la cadena.
+4. Despliega y abre la URL de Vercel. Ingresa la contraseña de Mostrador para acceder a la caja.
+
+El servidor crea el esquema privado `mostrador` y carga productos de demostración cuando la base está vacía. Las ventas, movimientos y abonos se ejecutan en transacciones PostgreSQL. Los datos de la SQLite local se conservan en tu equipo y no se importan al publicar.
